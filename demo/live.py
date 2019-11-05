@@ -7,9 +7,10 @@ from imutils.video import FPS, WebcamVideoStream
 import argparse
 
 parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
-parser.add_argument('--weights', default='weights/ssd_300_VOC0712.pth',
+#parser.add_argument('--weights', default='weights/ssd_300_VOC0712.pth',
+parser.add_argument('--weights', default='../weights/ssd300_mAP_77.43_v2.pth',
                     type=str, help='Trained state_dict file path')
-parser.add_argument('--cuda', default=False, type=bool,
+parser.add_argument('--cuda', default=True, type=bool,
                     help='Use cuda in live demo')
 args = parser.parse_args()
 
@@ -22,6 +23,7 @@ def cv2_demo(net, transform):
         height, width = frame.shape[:2]
         x = torch.from_numpy(transform(frame)[0]).permute(2, 0, 1)
         x = Variable(x.unsqueeze(0))
+        if args.cuda: x = x.cuda()
         y = net(x)  # forward pass
         detections = y.data
         # scale each detection back up to the image
@@ -74,10 +76,28 @@ if __name__ == '__main__':
     from data import BaseTransform, VOC_CLASSES as labelmap
     from ssd import build_ssd
 
-    net = build_ssd('test', 300, 21)    # initialize SSD
+    if torch.cuda.is_available():
+        if args.cuda:
+            torch.set_default_tensor_type('torch.cuda.FloatTensor')
+        if not args.cuda:
+            print("WARNING: It looks like you have a CUDA device, but aren't using \ CUDA. Run with --cuda for optimal eval speed.")
+            torch.set_default_tensor_type('torch.FloatTensor')
+    else:
+        torch.set_default_tensor_type('torch.FloatTensor')   
+ 
+    #if torch.cuda.is_available():
+    #    if args.cuda:
+    #        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    #    if not args.cuda:
+    #        torch.set_default_tensor_type('torch.FloatTensor')
+
+    net = build_ssd('test', 300, 21)    # initialize SSD 
+
+    #device = torch.device('cuda:0')
+    #net = net.to('cuda:0')
+
     net.load_state_dict(torch.load(args.weights))
     transform = BaseTransform(net.size, (104/256.0, 117/256.0, 123/256.0))
-
     fps = FPS().start()
     cv2_demo(net.eval(), transform)
     # stop the timer and display FPS information

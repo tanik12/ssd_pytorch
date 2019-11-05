@@ -25,6 +25,8 @@ class SSD(nn.Module):
         head: "multibox head" consists of loc and conf conv layers
     """
 
+
+
     def __init__(self, phase, size, base, extras, head, num_classes):
         super(SSD, self).__init__()
         self.phase = phase
