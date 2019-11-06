@@ -1,3 +1,10 @@
+# DEMOを実行するまでの簡易手順
+・pytorchのinstall後に下記をinstall<br>
+  sudo pip install visdom imutils<br>
+・SSDの学習済みモデルをダウンロード<br>
+　→ ダウンロード先：https://s3.amazonaws.com/amdegroot-models/ssd300_mAP_77.43_v2.pth<br>
+
+# 以降は元のサイトの内容
 # SSD: Single Shot MultiBox Object Detector, in PyTorch
 A [PyTorch](http://pytorch.org/) implementation of [Single Shot MultiBox Detector](http://arxiv.org/abs/1512.02325) from the 2016 paper by Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy, Scott Reed, Cheng-Yang, and Alexander C. Berg.  The official and original Caffe code can be found [here](https://github.com/weiliu89/caffe/tree/ssd).
 
